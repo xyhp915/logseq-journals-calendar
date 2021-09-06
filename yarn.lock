@@ -20,10 +20,10 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@logseq/libs@^0.0.1-alpha.26":
-  version "0.0.1-alpha.27"
-  resolved "https://registry.yarnpkg.com/@logseq/libs/-/libs-0.0.1-alpha.27.tgz#55b1eb9b2609d1a87e7baa910ee09374f040c3ff"
-  integrity sha512-Hc5FVV+ceqUz5zGMH2v0vPswBkZlUTDaQov2GFWp95rfaL8JIfs9XAG017Jzbqz1gos1VCfmpCSBWgoISllEaQ==
+"@logseq/libs@^0.0.1-alpha.28":
+  version "0.0.1-alpha.28"
+  resolved "https://registry.yarnpkg.com/@logseq/libs/-/libs-0.0.1-alpha.28.tgz#2b0e39e2181cacd35ef92a72b0f9647d6feea803"
+  integrity sha512-DKWevUisS6Bvv1WSkkJAC2VahCb/oVYYDmeiH4SlzEq1XtF2/0pufCnGJamqW/P3U+KQWx/xjx6wGmpA87D3LQ==
   dependencies:
     csstype "^3.0.8"
     debug "^4.3.1"

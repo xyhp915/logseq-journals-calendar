@@ -20,5 +20,9 @@ export default {
   optimizeDeps: {
     exclude: ['dayjs'],
   },
+  build: {
+    target: 'esnext',
+    minify: 'esnext',
+  },
   plugins: [vue(), svg()],
 }
