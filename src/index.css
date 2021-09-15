@@ -20,12 +20,14 @@ html, body {
 
 .calendar-inner {
   position: absolute;
-  right: 140px;
-  top: 50px;
 }
 
 h1 {
   color: red;
   font-size: 20px;
   text-align: center;
+}
+
+.vc-container {
+  border-radius: 4px !important;
 }

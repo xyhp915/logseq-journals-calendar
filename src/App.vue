@@ -2,8 +2,10 @@
   <div class="calendar-wrap"
        @click="_onClickOutside"
   >
-    <div class="calendar-inner" v-if="ready">
+    <div class="calendar-inner">
       <v-calendar
+        v-if="ready"
+        ref="calendar"
         :onDayclick="_onDaySelect"
         @update:to-page="_onToPage"
         v-bind="opts"/>
@@ -13,9 +15,12 @@
 
 <script>
 import customParseFormat from 'dayjs/esm/plugin/customParseFormat'
+import isToday from 'dayjs/esm/plugin/isToday'
+
 import dayjs from 'dayjs/esm/index'
 
 dayjs.extend(customParseFormat)
+dayjs.extend(isToday)
 
 export default {
   name: 'App',
@@ -34,6 +39,11 @@ export default {
             dot: true,
             dates: [],
           },
+          {
+            key: 'today',
+            highlight: true,
+            dates: new Date(),
+          },
         ],
       },
       mDate: {
@@ -44,8 +54,8 @@ export default {
   },
 
   mounted () {
-    logseq.App.onThemeModeChanged((label) => {
-      this.opts[`is-dark`] = label === 'dark'
+    logseq.App.onThemeModeChanged(({ mode }) => {
+      this.opts[`is-dark`] = mode === 'dark'
     })
 
     const refreshConfigs = () => logseq.App.getUserConfigs().then((configs) => {
@@ -79,17 +89,17 @@ export default {
 
       const dates = journals.map(it => {
         const d = dayjs(it[`journal-day`].toString())
-        if (d.isValid()) {
+        if (d.isValid() && !d.isToday()) {
           return d.toDate()
         }
       })
 
-      this.opts.attributes = [
-        {
-          dot: true,
-          dates,
-        },
-      ]
+      this.opts.attributes[0] = {
+        dot: true,
+        dates,
+      }
+
+      this.opts.attributes = [...this.opts.attributes]
     },
 
     _onToPage (e) {

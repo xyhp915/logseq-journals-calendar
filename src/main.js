@@ -10,7 +10,16 @@ import iconCalendar from './calendar.svg'
  */
 function createModel () {
   return {
-    openCalendar () {
+    openCalendar (e) {
+      const { rect } = e
+      const inner = document.querySelector('.calendar-inner')
+
+      console.log(rect)
+      Object.assign(inner.style, {
+        top: `${rect.top + 30}px`,
+        left: `${rect.left - 115}px`,
+      })
+
       logseq.showMainUI()
     },
   }
@@ -50,7 +59,9 @@ function main () {
   logseq.App.registerUIItem('toolbar', {
     key: 'open-calendar',
     template: `
-      <a class="button" data-on-click="openCalendar">
+      <a class="button" 
+      data-on-click="openCalendar"
+      data-rect>
         ${iconCalendar.content}
       </a>
     `,
