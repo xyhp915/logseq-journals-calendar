@@ -3,7 +3,6 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import './index.css'
 import VCalendar from 'v-calendar'
-import iconCalendar from './calendar.svg'
 
 /**
  * user model
@@ -42,16 +41,6 @@ function main () {
       align-items: center;
       font-weight: 500;
       position: relative;
-      top: -1px;
-    }
-    
-    div[data-injected-ui=open-calendar-${key}] a {
-      opacity: .8;
-      padding: 6px;
-    }
-    
-    div[data-injected-ui=open-calendar-${key}] iconfont {
-      font-size: 18px;
     }
   `)
 
@@ -62,7 +51,7 @@ function main () {
       <a class="button" 
       data-on-click="openCalendar"
       data-rect>
-        ${iconCalendar.content}
+       <i class="ti ti-calendar-event"></i> 
       </a>
     `,
   })

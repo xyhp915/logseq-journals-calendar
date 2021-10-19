@@ -20,6 +20,7 @@ html, body {
 
 .calendar-inner {
   position: absolute;
+  transform: translateY(5px);
 }
 
 h1 {
