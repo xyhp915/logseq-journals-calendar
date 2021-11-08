@@ -15,11 +15,13 @@
 
 <script>
 import customParseFormat from 'dayjs/esm/plugin/customParseFormat'
+import advancedFormat from 'dayjs/esm/plugin/advancedFormat'
 import isToday from 'dayjs/esm/plugin/isToday'
 
 import dayjs from 'dayjs/esm/index'
 
 dayjs.extend(customParseFormat)
+dayjs.extend(advancedFormat)
 dayjs.extend(isToday)
 
 export default {
@@ -141,21 +143,22 @@ export default {
       let k = id.replaceAll('-', '')
 
       if (this.journals.hasOwnProperty(k)) {
-        id = this.journals[k][`original-name`]
+        t = this.journals[k][`original-name`]
       } else if (this.preferredDateFormat) {
         // TODO: user preferred date format?
-        // const format = this.preferredDateFormat.replace('yyyy', 'YYYY').
-        //   replace('dd', 'DD').
-        //   replace('EEEE', 'dddd').
-        //   replace('EEE', 'ddd').
-        //   replace('EE', 'dd').
-        //   replace('E', 'dd')
+        const format = this.preferredDateFormat.replace('yyyy', 'YYYY').
+          replace('dd', 'DD').
+          replace('do', 'Do').
+          replace('EEEE', 'dddd').
+          replace('EEE', 'ddd').
+          replace('EE', 'dd').
+          replace('E', 'dd')
 
-        // t = dayjs(id).format(format)
+        t = dayjs(id).format(format)
       }
 
       logseq.hideMainUI()
-      logseq.App.pushState('page', { name: id })
+      logseq.App.pushState('page', { name: t})
     },
   },
 }
