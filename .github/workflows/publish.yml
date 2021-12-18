@@ -33,14 +33,13 @@ jobs:
           echo "::set-output name=tag_name::$(git tag --sort version:refname | tail -n 1)"
 
       - name: Create Release
+        uses: ncipollo/release-action@v1
         id: create_release
-        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ github.ref }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          allowUpdates: true
           draft: false
           prerelease: false
 
