@@ -31,7 +31,6 @@ export default {
     const d = new Date()
     return {
       ready: false,
-      shiftKey: false,
       preferredDateFormat: null,
       journals: null,
       opts: {
@@ -73,17 +72,9 @@ export default {
       immediate: true,
     })
 
-    document.addEventListener('keydown', this._onKeyDown)
-    document.addEventListener('keyup', this._onKeyUp)
-
     logseq.on('ui:visible:changed', ({ visible }) => {
       visible && (this.ready = true, refreshConfigs())
     })
-  },
-
-  destroyed() {
-    document.removeEventListener('keydown', this._onKeyDown)
-    document.removeEventListener('keyup', this._onKeyUp)
   },
 
   methods: {
@@ -145,15 +136,7 @@ export default {
       !inner && logseq.hideMainUI()
     },
 
-    _onKeyDown ({ shiftKey }) {
-      this.shiftKey = shiftKey
-    },
-
-    _onKeyUp ({ shiftKey }) {
-      this.shiftKey = shiftKey
-    },
-
-    async _onDaySelect ({ id }) {
+    async _onDaySelect ({ event, id }) {
       this.date = id
 
       let t = id
@@ -175,7 +158,7 @@ export default {
       }
 
       logseq.hideMainUI()
-      if (this.shiftKey) {
+      if (event.shiftKey) {
         var page = await logseq.Editor.getPage(t)
         if (page == null) {
           // Journal entry does not exist. Create it.
