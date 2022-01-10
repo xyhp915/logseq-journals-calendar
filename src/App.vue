@@ -139,7 +139,7 @@ export default {
       !inner && logseq.hideMainUI()
     },
 
-    _onDaySelect ({ id }) {
+    async _onDaySelect ({ event, id }) {
       this.date = id
 
       let t = id
@@ -161,7 +161,19 @@ export default {
       }
 
       logseq.hideMainUI()
-      logseq.App.pushState('page', { name: t})
+      if (event.shiftKey) {
+        var page = await logseq.Editor.getPage(t)
+        if (page == null) {
+          // Journal entry does not exist. Create it.
+          page = await logseq.Editor.createPage(t, {}, {
+            journal: true,
+            redirect: false,
+          })
+        }
+        logseq.Editor.openInRightSidebar(page.uuid)
+      } else {
+        logseq.App.pushState('page', { name: t})
+      }
     },
   },
 }
