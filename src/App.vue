@@ -64,6 +64,9 @@ export default {
       if (configs.preferredDateFormat) {
         this.preferredDateFormat = configs.preferredDateFormat
       }
+      if (configs.preferredLanguage) {
+        this.opts[`locale`] = configs.preferredLanguage
+      }
     })
 
     this.$watch('mDate', () => {
