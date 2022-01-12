@@ -23,7 +23,6 @@
   "logseq": {
     "id": "_zsmbaoekb",
     "title": "Journals calendar",
-    "devEntry": "http://localhost:3000",
     "icon": "./icon.png"
   }
 }
