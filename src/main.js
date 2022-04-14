@@ -2,7 +2,19 @@ import '@logseq/libs'
 import { createApp } from 'vue'
 import App from './App.vue'
 import './index.css'
+import 'v-calendar/dist/style.css'
 import VCalendar from 'v-calendar'
+
+/** settings **/
+// const settingsSchema = [
+//   {
+//     key: 'firstDayOfWeek',
+//     type: 'number',
+//     title: 'The first day of week',
+//     description: 'Day number for the first day of the week (1: Sun - 7: Sat). Ignore setting this prop if you want to allow the locale to determine this setting.',
+//     default: 1
+//   }
+// ]
 
 /**
  * user model
@@ -61,4 +73,7 @@ function main () {
 }
 
 // bootstrap
-logseq.ready(createModel()).then(main)
+logseq
+  .ready(createModel())
+  .then(main)
+  .catch(null)

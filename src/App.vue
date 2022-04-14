@@ -3,12 +3,14 @@
        @click="_onClickOutside"
   >
     <div class="calendar-inner">
-      <v-calendar
-        v-if="ready"
-        ref="calendar"
-        :onDayclick="_onDaySelect"
-        @update:to-page="_onToPage"
-        v-bind="opts"/>
+      <Transition name="fade">
+        <v-calendar
+            v-if="ready"
+            ref="calendar"
+            :onDayclick="_onDaySelect"
+            @update:to-page="_onToPage"
+            v-bind="opts"/>
+      </Transition>
     </div>
   </div>
 </template>
@@ -29,6 +31,8 @@ export default {
 
   data () {
     const d = new Date()
+    const { props, firstDayOfWeek } = logseq.settings
+
     return {
       ready: false,
       preferredDateFormat: null,
@@ -47,6 +51,8 @@ export default {
             dates: new Date(),
           },
         ],
+        [`first-day-of-week`]: firstDayOfWeek,
+        ...(props || {})
       },
       mDate: {
         month: d.getMonth() + 1,
@@ -76,7 +82,12 @@ export default {
     })
 
     logseq.on('ui:visible:changed', ({ visible }) => {
-      visible && (this.ready = true, refreshConfigs())
+      visible && (this.ready = true, setTimeout(refreshConfigs, 1000))
+    })
+
+    logseq.on('settings:changed', (settings) => {
+      const { props, firstDayOfWeek } = settings || {}
+      this.opts[`first-day-of-week`] = firstDayOfWeek
     })
   },
 
@@ -149,13 +160,7 @@ export default {
         t = this.journals[k][`original-name`]
       } else if (this.preferredDateFormat) {
         // TODO: user preferred date format?
-        const format = this.preferredDateFormat.replace('yyyy', 'YYYY').
-          replace('dd', 'DD').
-          replace('do', 'Do').
-          replace('EEEE', 'dddd').
-          replace('EEE', 'ddd').
-          replace('EE', 'dd').
-          replace('E', 'dd')
+        const format = this.preferredDateFormat.replace('yyyy', 'YYYY').replace('dd', 'DD').replace('do', 'Do').replace('EEEE', 'dddd').replace('EEE', 'ddd').replace('EE', 'dd').replace('E', 'dd')
 
         t = dayjs(id).format(format)
       }
@@ -172,9 +177,14 @@ export default {
         }
         logseq.Editor.openInRightSidebar(page.uuid)
       } else {
-        logseq.App.pushState('page', { name: t})
+        logseq.App.pushState('page', { name: t })
       }
     },
   },
+
+  beforeUnmount () {
+    logseq.off('ui:visible:changed')
+    logseq.off('settings:changed')
+  }
 }
 </script>

@@ -32,3 +32,13 @@ h1 {
 .vc-container {
   border-radius: 4px !important;
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

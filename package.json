@@ -1,7 +1,7 @@
 {
   "name": "logseq-journals-calendar",
   "description": "A simple journals calendar plugin for Logseq.",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "main": "dist/index.html",
   "author": "xyhp915",
   "scripts": {
@@ -9,19 +9,20 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@logseq/libs": "^0.0.1-alpha.28",
-    "dayjs": "^1.10.4",
-    "v-calendar": "^3.0.0-alpha.3",
-    "vue": "^3.0.4"
+    "@logseq/libs": "0.0.1-alpha.35",
+    "dayjs": "1.11.0",
+    "lodash.kebabcase": "^4.1.1",
+    "v-calendar": "next",
+    "vue": "3.2.32"
   },
   "devDependencies": {
     "@popperjs/core": "^2.10.1",
-    "@vitejs/plugin-vue": "^1.6.0",
+    "@vitejs/plugin-vue": "2.3.1",
     "@vue/compiler-sfc": "^3.0.4",
-    "vite": "2.5.3"
+    "vite": "2.9.4"
   },
   "logseq": {
-    "id": "_zsmbaoekb",
+    "id": "_zsmbaoekb-journals-calendar",
     "title": "Journals calendar",
     "icon": "./icon.png"
   }
