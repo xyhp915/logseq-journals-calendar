@@ -16,25 +16,42 @@
 </template>
 
 <script>
-import customParseFormat from 'dayjs/esm/plugin/customParseFormat'
-import advancedFormat from 'dayjs/esm/plugin/advancedFormat'
-import isToday from 'dayjs/esm/plugin/isToday'
-
+import kebabCase from 'lodash.kebabcase'
 import dayjs from 'dayjs/esm/index'
 
-dayjs.extend(customParseFormat)
-dayjs.extend(advancedFormat)
-dayjs.extend(isToday)
+function createSetterContainerStyle (mode) {
+  let containerStyle = null
+
+  return (k, v, ...args) => {
+    if (!containerStyle) {
+      containerStyle = [...document.styleSheets[0].cssRules, ...(document.styleSheets[1]?.cssRules || [])]
+          .find(s => s.selectorText === `.vc-container${mode === 'dark' ? '.vc-is-dark' : ''}`)
+          .style
+    }
+
+    containerStyle.setProperty(kebabCase(k), v, ...args)
+  }
+}
+
+const setLightContainerStyle = createSetterContainerStyle('light')
+const setDarkContainerStyle = createSetterContainerStyle('dark')
 
 export default {
   name: 'App',
 
   data () {
     const d = new Date()
-    const { props, firstDayOfWeek } = logseq.settings
+    const {
+      props, firstDayOfWeek,
+      backgroundColorOfContainerLight, backgroundColorOfContainerDark
+    } = logseq.settings
 
     return {
       ready: false,
+      bgColor: {
+        dark: backgroundColorOfContainerDark,
+        light: backgroundColorOfContainerLight
+      },
       preferredDateFormat: null,
       journals: null,
       opts: {
@@ -73,6 +90,9 @@ export default {
       if (configs.preferredLanguage) {
         this.opts[`locale`] = configs.preferredLanguage
       }
+      if (configs.preferredThemeMode === 'dark') {
+        this.opts[`is-dark`] = true
+      }
     })
 
     this.$watch('mDate', () => {
@@ -81,14 +101,31 @@ export default {
       immediate: true,
     })
 
+    this.$watch('currentBgColor', (color) => {
+      setLightContainerStyle('backgroundColor', `${color}`, 'important')
+    }, {
+      immediate: true
+    })
+
+    // TODO: expose
+    setDarkContainerStyle('borderColor', '#5151515c')
+
     logseq.on('ui:visible:changed', ({ visible }) => {
       visible && (this.ready = true, setTimeout(refreshConfigs, 1000))
     })
 
     logseq.on('settings:changed', (settings) => {
-      const { props, firstDayOfWeek } = settings || {}
+      const {
+        props, firstDayOfWeek,
+        backgroundColorOfContainerDark, backgroundColorOfContainerLight
+      } = settings || {}
+
       this.opts[`first-day-of-week`] = firstDayOfWeek
+      this.bgColor.dark = backgroundColorOfContainerDark
+      this.bgColor.light = backgroundColorOfContainerLight
     })
+
+    refreshConfigs()
   },
 
   methods: {
@@ -147,7 +184,9 @@ export default {
     _onClickOutside ({ target }) {
       const inner = target.closest('.calendar-inner')
 
-      !inner && logseq.hideMainUI()
+      !inner && logseq.hideMainUI({
+        restoreEditingCursor: true
+      })
     },
 
     async _onDaySelect ({ event, id }) {
@@ -159,15 +198,22 @@ export default {
       if (this.journals.hasOwnProperty(k)) {
         t = this.journals[k][`original-name`]
       } else if (this.preferredDateFormat) {
-        // TODO: user preferred date format?
-        const format = this.preferredDateFormat.replace('yyyy', 'YYYY').replace('dd', 'DD').replace('do', 'Do').replace('EEEE', 'dddd').replace('EEE', 'ddd').replace('EE', 'dd').replace('E', 'dd')
+        const format = this.preferredDateFormat
+            .replace('yyyy', 'YYYY')
+            .replace('dd', 'DD')
+            .replace('do', 'Do')
+            .replace('EEEE', 'dddd')
+            .replace('EEE', 'ddd')
+            .replace('EE', 'dd')
+            .replace('E', 'dd')
 
         t = dayjs(id).format(format)
       }
 
       logseq.hideMainUI()
+
       if (event.shiftKey) {
-        var page = await logseq.Editor.getPage(t)
+        let page = await logseq.Editor.getPage(t)
         if (page == null) {
           // Journal entry does not exist. Create it.
           page = await logseq.Editor.createPage(t, {}, {
@@ -180,6 +226,16 @@ export default {
         logseq.App.pushState('page', { name: t })
       }
     },
+  },
+
+  computed: {
+    currentBgColor () {
+      if (this.opts[`is-dark`]) {
+        return this.bgColor.dark
+      } else {
+        return this.bgColor.light
+      }
+    }
   },
 
   beforeUnmount () {
