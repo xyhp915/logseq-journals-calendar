@@ -83,16 +83,8 @@ export default {
       this.opts[`is-dark`] = mode === 'dark'
     })
 
-    const refreshConfigs = () => logseq.App.getUserConfigs().then((configs) => {
-      if (configs.preferredDateFormat) {
-        this.preferredDateFormat = configs.preferredDateFormat
-      }
-      if (configs.preferredLanguage) {
-        this.opts[`locale`] = configs.preferredLanguage
-      }
-      if (configs.preferredThemeMode === 'dark') {
-        this.opts[`is-dark`] = true
-      }
+    logseq.App.onCurrentGraphChanged(() => {
+      this.journals = null
     })
 
     this.$watch('mDate', () => {
@@ -106,6 +98,8 @@ export default {
     }, {
       immediate: true
     })
+
+    const refreshConfigs = this._refreshUserConfigs.bind(this)
 
     // TODO: expose
     setDarkContainerStyle('borderColor', '#5151515c')
@@ -125,10 +119,24 @@ export default {
       this.bgColor.light = backgroundColorOfContainerLight
     })
 
-    refreshConfigs()
+    setTimeout(refreshConfigs, 1000)
   },
 
   methods: {
+    async _refreshUserConfigs () {
+      const configs = await logseq.App.getUserConfigs()
+
+      if (configs.preferredDateFormat) {
+        this.preferredDateFormat = configs.preferredDateFormat
+      }
+      if (configs.preferredLanguage) {
+        this.opts[`locale`] = configs.preferredLanguage
+      }
+      if (configs.preferredThemeMode === 'dark') {
+        this.opts[`is-dark`] = true
+      }
+    },
+
     async _updateCalendarInMonth () {
       const journals = await this._getCurrentRepoRangeJournals()
 
@@ -195,7 +203,7 @@ export default {
       let t = id
       let k = id.replaceAll('-', '')
 
-      if (this.journals.hasOwnProperty(k)) {
+      if (this.journals?.hasOwnProperty(k)) {
         t = this.journals[k][`original-name`]
       } else if (this.preferredDateFormat) {
         const format = this.preferredDateFormat

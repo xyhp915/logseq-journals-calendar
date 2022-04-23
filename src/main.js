@@ -66,7 +66,9 @@ function createModel () {
         date = dayjs(date).format('YYYY-MM-DD')
       }
 
-      app?._onDaySelect({ event: {}, id: date })
+      app?._refreshUserConfigs().then(() => {
+        app._onDaySelect({ event: {}, id: date })
+      })
     },
 
     goToToday () {
