@@ -41,7 +41,14 @@ const settingsSchema = [{
   description: '🌚 color of dark mode!',
   default: '#000000',
   inputAs: 'color'
-}]
+}, {
+  key: 'usePageCalendar',
+  type: 'boolean',
+  title: 'Journal calendar for current page',
+  description: 'Whether show journal calendar for current open page?',
+  default: false,
+}
+]
 
 let app = null
 

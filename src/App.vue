@@ -43,11 +43,13 @@ export default {
     const d = new Date()
     const {
       props, firstDayOfWeek,
-      backgroundColorOfContainerLight, backgroundColorOfContainerDark
+      backgroundColorOfContainerLight, backgroundColorOfContainerDark,
+      usePageCalendar
     } = logseq.settings
 
     return {
       ready: false,
+      pageCalendar: usePageCalendar,
       bgColor: {
         dark: backgroundColorOfContainerDark,
         light: backgroundColorOfContainerLight
@@ -85,6 +87,12 @@ export default {
 
     logseq.App.onCurrentGraphChanged(() => {
       this.journals = null
+    })
+
+    logseq.App.onRouteChanged(async () => {
+      if(this.pageCalendar){
+        await this._updateCalendarInMonth()
+      }
     })
 
     this.$watch('mDate', () => {
@@ -171,17 +179,32 @@ export default {
       const { month, year } = this.mDate
       const my = year + (month < 10 ? '0' : '') + month
 
-      let ret
+      let ret, query
 
-      try {
-        ret = await logseq.DB.datascriptQuery(`
+      if(this.pageCalendar) {
+        const page = await logseq.Editor.getCurrentPage()
+        query = `
+          [:find (pull ?p [*])
+           :where
+           [?b :block/refs ${page.id}]
+           [?b :block/page ?p]
+           [?p :block/journal? true]
+           [?p :block/journal-day ?d]
+           [(>= ?d ${my}01)] [(<= ?d ${my}31)]]
+        `
+      } else {
+        query = `
           [:find (pull ?p [*])
            :where
            [?b :block/page ?p]
            [?p :block/journal? true]
            [?p :block/journal-day ?d]
            [(>= ?d ${my}01)] [(<= ?d ${my}31)]]
-        `)
+        `
+      }
+
+      try {
+        ret = await logseq.DB.datascriptQuery(query)
       } catch (e) {
         console.error(e)
       }
