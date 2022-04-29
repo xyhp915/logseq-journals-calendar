@@ -9,7 +9,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@logseq/libs": "^0.0.2",
+    "@logseq/libs": "0.0.5",
     "dayjs": "1.11.0",
     "lodash.kebabcase": "^4.1.1",
     "v-calendar": "next",
