@@ -213,7 +213,7 @@ export default {
             .replace('EEEE', 'dddd')
             .replace('EEE', 'ddd')
             .replace('EE', 'dd')
-            .replace('E', 'dd')
+            .replace('E', 'ddd')
 
         t = dayjs(id).format(format)
       }
