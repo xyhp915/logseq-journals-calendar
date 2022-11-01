@@ -23,12 +23,6 @@ const settingsSchema = [
     description: 'Do you want to show Today button from toolbar? (reload needed)',
     default: true,
   }, {
-    key: 'firstDayOfWeek',
-    type: 'number',
-    title: 'The first day of week',
-    description: 'Day number for the first day of the week (1: Sun - 7: Sat). Ignore setting this prop if you want to allow the locale to determine this setting.',
-    default: 1,
-  }, {
     key: 'backgroundColorOfContainerLight',
     type: 'string',
     title: 'The background color of calendar container (light mode)',
