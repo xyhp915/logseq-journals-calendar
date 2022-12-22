@@ -41,6 +41,12 @@ const settingsSchema = [{
   description: '🌚 color of dark mode!',
   default: '#000000',
   inputAs: 'color'
+}, {
+  key: 'hotkey',
+  type: 'string',
+  title: 'Hotkey to open calendar',
+  description: 'Hotkey to open calendar',
+  default: null
 }]
 
 let app = null
@@ -101,13 +107,28 @@ function main () {
   // external btns
   logseq.App.registerUIItem('toolbar', {
     key: 'open-calendar', template: `
-      <a class="button" 
+      <a class="button" id="open-calendar-button"
       data-on-click="openCalendar"
       data-rect>
        <i class="ti ti-calendar-event"></i> 
       </a>
     `,
   })
+
+  if (logseq.settings.hotkey) {
+    logseq.App.registerCommandShortcut({
+      binding: logseq.settings.hotkey
+    }, () => {
+      const rect = top.document.getElementById('open-calendar-button').getBoundingClientRect()
+      const inner = document.querySelector('.calendar-inner')
+
+      Object.assign(inner.style, {
+        top: `${rect.top + 30}px`, left: `${rect.left - 115}px`,
+      })
+
+      logseq.showMainUI()
+    })
+  }
 
   if (logseq.settings.showTodayBtn) {
     logseq.App.registerUIItem('toolbar', {
