@@ -5,11 +5,11 @@
     <div class="calendar-inner">
       <Transition name="fade">
         <v-calendar
-            v-if="ready"
-            ref="calendar"
-            :onDayclick="_onDaySelect"
-            @update:to-page="_onToPage"
-            v-bind="opts"/>
+          v-if="ready"
+          ref="calendar"
+          :onDayclick="_onDaySelect"
+          @update:to-page="_onToPage"
+          v-bind="opts"/>
       </Transition>
     </div>
   </div>
@@ -24,9 +24,8 @@ function createSetterContainerStyle (mode) {
 
   return (k, v, ...args) => {
     if (!containerStyle) {
-      containerStyle = [...document.styleSheets[0].cssRules, ...(document.styleSheets[1]?.cssRules || [])]
-          .find(s => s.selectorText === `.vc-container${mode === 'dark' ? '.vc-is-dark' : ''}`)
-          .style
+      containerStyle = [...document.styleSheets[0].cssRules, ...(document.styleSheets[1]?.cssRules || [])].find(
+        s => s.selectorText === `.vc-container${mode === 'dark' ? '.vc-is-dark' : ''}`).style
     }
 
     containerStyle.setProperty(kebabCase(k), v, ...args)
@@ -43,14 +42,14 @@ export default {
     const d = new Date()
     const {
       props, firstDayOfWeek,
-      backgroundColorOfContainerLight, backgroundColorOfContainerDark
+      backgroundColorOfContainerLight, backgroundColorOfContainerDark,
     } = logseq.settings
 
     return {
       ready: false,
       bgColor: {
         dark: backgroundColorOfContainerDark,
-        light: backgroundColorOfContainerLight
+        light: backgroundColorOfContainerLight,
       },
       preferredDateFormat: null,
       journals: null,
@@ -69,7 +68,7 @@ export default {
           },
         ],
         [`first-day-of-week`]: firstDayOfWeek,
-        ...(props || {})
+        ...(props || {}),
       },
       mDate: {
         month: d.getMonth() + 1,
@@ -96,7 +95,7 @@ export default {
     this.$watch('currentBgColor', (color) => {
       setLightContainerStyle('backgroundColor', `${color}`, 'important')
     }, {
-      immediate: true
+      immediate: true,
     })
 
     const refreshConfigs = this._refreshUserConfigs.bind(this)
@@ -111,7 +110,7 @@ export default {
     logseq.on('settings:changed', (settings) => {
       const {
         props, firstDayOfWeek,
-        backgroundColorOfContainerDark, backgroundColorOfContainerLight
+        backgroundColorOfContainerDark, backgroundColorOfContainerLight,
       } = settings || {}
 
       this.opts[`first-day-of-week`] = firstDayOfWeek
@@ -120,9 +119,18 @@ export default {
     })
 
     setTimeout(refreshConfigs, 1000)
+
+    // ESC
+    document.addEventListener('keydown', this._closeHandle)
   },
 
   methods: {
+    _closeHandle (e) {
+      if (e.which === 27) {
+        logseq.hideMainUI()
+      }
+    },
+
     async _refreshUserConfigs () {
       const configs = await logseq.App.getUserConfigs()
 
@@ -193,7 +201,7 @@ export default {
       const inner = target.closest('.calendar-inner')
 
       !inner && logseq.hideMainUI({
-        restoreEditingCursor: true
+        restoreEditingCursor: true,
       })
     },
 
@@ -206,14 +214,13 @@ export default {
       if (this.journals?.hasOwnProperty(k)) {
         t = this.journals[k][`original-name`]
       } else if (this.preferredDateFormat) {
-        const format = this.preferredDateFormat
-            .replace('yyyy', 'YYYY')
-            .replace('dd', 'DD')
-            .replace('do', 'Do')
-            .replace('EEEE', 'dddd')
-            .replace('EEE', 'ddd')
-            .replace('EE', 'dd')
-            .replace('E', 'ddd')
+        const format = this.preferredDateFormat.replace('yyyy', 'YYYY').
+          replace('dd', 'DD').
+          replace('do', 'Do').
+          replace('EEEE', 'dddd').
+          replace('EEE', 'ddd').
+          replace('EE', 'dd').
+          replace('E', 'ddd')
 
         t = dayjs(id).format(format)
       }
@@ -243,12 +250,13 @@ export default {
       } else {
         return this.bgColor.light
       }
-    }
+    },
   },
 
   beforeUnmount () {
     logseq.off('ui:visible:changed')
     logseq.off('settings:changed')
-  }
+    document.removeEventListener('keydown', this._closeHandle)
+  },
 }
 </script>
