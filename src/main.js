@@ -48,6 +48,12 @@ const settingsSchema = [
     title: 'Hotkey to open calendar',
     description: 'Hotkey to open calendar',
     default: null,
+  }, {
+    key: 'keepOpenOnSelect',
+    type: 'boolean',
+    title: '',
+    description: 'Keep the calendar open after selecting a date',
+    default: false,
   }]
 
 let app = null
