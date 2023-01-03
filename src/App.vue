@@ -43,6 +43,7 @@ export default {
     const {
       props, firstDayOfWeek,
       backgroundColorOfContainerLight, backgroundColorOfContainerDark,
+      keepOpenOnSelect,
     } = logseq.settings
 
     return {
@@ -74,6 +75,7 @@ export default {
         month: d.getMonth() + 1,
         year: d.getFullYear(),
       },
+      keepOpenOnSelect,
     }
   },
 
@@ -111,11 +113,13 @@ export default {
       const {
         props, firstDayOfWeek,
         backgroundColorOfContainerDark, backgroundColorOfContainerLight,
+        keepOpenOnSelect,
       } = settings || {}
 
       this.opts[`first-day-of-week`] = firstDayOfWeek
       this.bgColor.dark = backgroundColorOfContainerDark
       this.bgColor.light = backgroundColorOfContainerLight
+      this.keepOpenOnSelect = keepOpenOnSelect
     })
 
     setTimeout(refreshConfigs, 1000)
@@ -225,7 +229,9 @@ export default {
         t = dayjs(id).format(format)
       }
 
-      logseq.hideMainUI()
+      if (!this.keepOpenOnSelect) {
+        logseq.hideMainUI()
+      }
 
       if (event.shiftKey) {
         let page = await logseq.Editor.getPage(t)
