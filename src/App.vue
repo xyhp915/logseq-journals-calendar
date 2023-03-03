@@ -41,7 +41,7 @@ export default {
   data () {
     const d = new Date()
     const {
-      props, firstDayOfWeek,
+      props,
       backgroundColorOfContainerLight, backgroundColorOfContainerDark,
       keepOpenOnSelect,
     } = logseq.settings
@@ -68,7 +68,6 @@ export default {
             dates: new Date(),
           },
         ],
-        [`first-day-of-week`]: firstDayOfWeek,
         ...(props || {}),
       },
       mDate: {
@@ -111,12 +110,11 @@ export default {
 
     logseq.on('settings:changed', (settings) => {
       const {
-        props, firstDayOfWeek,
+        props,
         backgroundColorOfContainerDark, backgroundColorOfContainerLight,
         keepOpenOnSelect,
       } = settings || {}
 
-      this.opts[`first-day-of-week`] = firstDayOfWeek
       this.bgColor.dark = backgroundColorOfContainerDark
       this.bgColor.light = backgroundColorOfContainerLight
       this.keepOpenOnSelect = keepOpenOnSelect
@@ -146,6 +144,11 @@ export default {
       }
       if (configs.preferredThemeMode === 'dark') {
         this.opts[`is-dark`] = true
+      }
+      if (configs.preferredStartOfWeek !== undefined) {
+        // LogSeq numbers days 0: Mon - 6: Sun
+        // V-Calendar numbers days 1: Sat - 7: Sun
+        this.opts[`first-day-of-week`] = ((configs.preferredStartOfWeek + 1) % 7) + 1
       }
     },
 
