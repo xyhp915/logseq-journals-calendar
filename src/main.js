@@ -54,6 +54,12 @@ const settingsSchema = [
     title: '',
     description: 'Keep the calendar open after selecting a date',
     default: false,
+  }, {
+    key: 'showWeekNumbers',
+    type: 'boolean',
+    title: '',
+    description: 'Show week numbers in calendar',
+    default: false,
   }]
 
 let app = null
