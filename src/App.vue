@@ -88,6 +88,14 @@ export default {
       this.journals = null
     })
 
+    logseq.App.onTodayJournalCreated(({ title }) => {
+      this.opts.attributes[1] = {
+        key: 'today',
+        highlight: true,
+        dates: new Date(),
+      }
+    })
+
     this.$watch('mDate', () => {
       this._updateCalendarInMonth()
     }, {
