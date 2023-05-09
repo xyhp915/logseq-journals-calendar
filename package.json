@@ -1,7 +1,7 @@
 {
   "name": "logseq-journals-calendar",
   "description": "A simple journals calendar plugin for Logseq.",
-  "version": "0.10.8",
+  "version": "0.10.9",
   "main": "dist/index.html",
   "author": "xyhp915",
   "scripts": {
@@ -24,6 +24,7 @@
   "logseq": {
     "id": "_zsmbaoekb-journals-calendar",
     "title": "Journals calendar",
-    "icon": "./icon.png"
+    "icon": "./icon.png",
+    "devEntry": "http://localhost:5173"
   }
 }
