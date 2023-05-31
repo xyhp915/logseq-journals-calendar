@@ -45,6 +45,7 @@ export default {
       backgroundColorOfContainerLight, backgroundColorOfContainerDark,
       keepOpenOnSelect,
       showWeekNumbers,
+      showIsoWeeknumbers,
     } = logseq.settings
 
     return {
@@ -59,6 +60,7 @@ export default {
         color: 'orange',
         [`is-dark`]: false,
         [`show-weeknumbers`]: showWeekNumbers,
+        [`show-iso-weeknumbers`]: showIsoWeeknumbers,
         attributes: [
           {
             dot: true,
@@ -125,10 +127,12 @@ export default {
         backgroundColorOfContainerDark, backgroundColorOfContainerLight,
         keepOpenOnSelect,
         showWeekNumbers,
+        showIsoWeeknumbers,
       } = settings || {}
 
       this.opts[`first-day-of-week`] = firstDayOfWeek
       this.opts[`show-weeknumbers`] = showWeekNumbers
+      this.opts[`show-iso-weeknumbers`] = showIsoWeeknumbers
       this.bgColor.dark = backgroundColorOfContainerDark
       this.bgColor.light = backgroundColorOfContainerLight
       this.keepOpenOnSelect = keepOpenOnSelect

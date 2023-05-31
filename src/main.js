@@ -60,6 +60,12 @@ const settingsSchema = [
     title: '',
     description: 'Show week numbers in calendar',
     default: false,
+  },{
+    key: 'showIsoWeeknumbers',
+    type: 'boolean',
+    title: '',
+    description: 'Show week number in ISO format',
+    default: false,
   }]
 
 let app = null
