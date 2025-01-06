@@ -174,7 +174,7 @@ export default {
         return ac
       }, {})
 
-      console.debug('[query journals]', journals)
+      // console.debug('[query journals]', journals)
 
       const dates = journals.map(it => {
         const d = dayjs(it[`journal-day`].toString())
@@ -198,6 +198,8 @@ export default {
     async _getCurrentRepoRangeJournals () {
       const { month, year } = this.mDate
       const my = year + (month < 10 ? '0' : '') + month
+      const graph = await logseq.App.getCurrentGraph()
+      const isDB = graph.name?.startsWith('logseq_db')
 
       let ret
 
@@ -205,11 +207,11 @@ export default {
         ret = await logseq.DB.datascriptQuery(`
           [:find (pull ?p [*])
            :where
-           [?b :block/page ?p]
-           [?p :block/journal? true]
            [?p :block/journal-day ?d]
            [(>= ?d ${my}01)] [(<= ?d ${my}31)]]
         `)
+
+        // console.debug('[query journals]', ret)
       } catch (e) {
         console.error(e)
       }
@@ -232,7 +234,8 @@ export default {
       let k = id.replaceAll('-', '')
 
       if (this.journals?.hasOwnProperty(k)) {
-        t = this.journals[k][`original-name`]
+        const target = this.journals[k]
+        t = target?.[`original-name`] || target?.[`title`]
       } else if (this.preferredDateFormat) {
         const format = this.preferredDateFormat.replace('yyyy', 'YYYY').
           replace('dd', 'DD').
@@ -249,8 +252,11 @@ export default {
         logseq.hideMainUI()
       }
 
-      if (event.shiftKey) {
-        let page = await logseq.Editor.getPage(t)
+      const { supportDb } = await logseq.App.getInfo()
+      const isDbGraph = await logseq.App.checkCurrentIsDbGraph()
+      let page = await logseq.Editor.getPage(t)
+
+      if (isDbGraph || supportDb || event.shiftKey) {
         if (page == null) {
           // Journal entry does not exist. Create it.
           page = await logseq.Editor.createPage(t, {}, {
@@ -258,8 +264,16 @@ export default {
             redirect: false,
           })
         }
-        logseq.Editor.openInRightSidebar(page.uuid)
+      }
+
+      if (event.shiftKey) {
+        logseq.Editor.openInRightSidebar(page?.uuid)
+        logseq.hideMainUI()
       } else {
+        if (isDbGraph || supportDb) {
+          t = page?.uuid
+        }
+
         logseq.App.pushState('page', { name: t })
       }
     },
