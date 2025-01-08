@@ -1,7 +1,7 @@
 {
   "name": "logseq-journals-calendar",
   "description": "A simple journals calendar plugin for Logseq.",
-  "version": "0.10.11",
+  "version": "0.10.12",
   "main": "dist/index.html",
   "author": "xyhp915",
   "scripts": {
@@ -9,7 +9,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@logseq/libs": "next",
+    "@logseq/libs": "0.2.1",
     "dayjs": "1.11.7",
     "lodash.kebabcase": "^4.1.1",
     "v-calendar": "next",
