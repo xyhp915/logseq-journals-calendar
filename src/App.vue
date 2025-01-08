@@ -35,6 +35,15 @@ function createSetterContainerStyle (mode) {
 const setLightContainerStyle = createSetterContainerStyle('light')
 const setDarkContainerStyle = createSetterContainerStyle('dark')
 
+async function safeLogseqAppCall (name, ...args) {
+  try {
+    return await logseq.App[name]?.apply(null, args)
+  } catch (e) {
+    console.warn(e)
+    return false
+  }
+}
+
 export default {
   name: 'App',
 
@@ -235,8 +244,10 @@ export default {
 
       if (this.journals?.hasOwnProperty(k)) {
         const target = this.journals[k]
-        t = target?.[`original-name`] || target?.[`title`]
-      } else if (this.preferredDateFormat) {
+        t = target?.[`original-name`] || target?.[`name`] || target?.[`title`]
+      }
+
+      if (((t === id) || !t) && this.preferredDateFormat) {
         const format = this.preferredDateFormat.replace('yyyy', 'YYYY').
           replace('dd', 'DD').
           replace('do', 'Do').
@@ -253,7 +264,7 @@ export default {
       }
 
       const { supportDb } = await logseq.App.getInfo()
-      const isDbGraph = await logseq.App.checkCurrentIsDbGraph()
+      const isDbGraph = await safeLogseqAppCall('checkCurrentIsDbGraph')
       let page = await logseq.Editor.getPage(t)
 
       if (isDbGraph || supportDb || event.shiftKey) {
