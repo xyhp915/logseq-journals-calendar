@@ -9,7 +9,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@logseq/libs": "0.2.1",
+    "@logseq/libs": "0.2.2",
     "dayjs": "1.11.7",
     "lodash.kebabcase": "^4.1.1",
     "v-calendar": "next",
@@ -17,9 +17,9 @@
   },
   "devDependencies": {
     "@popperjs/core": "2.11.6",
-    "@vitejs/plugin-vue": "4.0.0",
-    "@vue/compiler-sfc": "3.2.45",
-    "vite": "4.0.3"
+    "@vitejs/plugin-vue": "5.2.1",
+    "@vue/compiler-sfc": "3.5.13",
+    "vite": "5.4.6"
   },
   "logseq": {
     "id": "_zsmbaoekb-journals-calendar",
