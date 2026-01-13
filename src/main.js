@@ -49,6 +49,18 @@ const settingsSchema = [
     description: 'Hotkey to open calendar',
     default: null,
   }, {
+    key: 'hotkeyPrevDay',
+    type: 'string',
+    title: 'Hotkey to go to previous day journal',
+    description: 'Navigate to yesterday\'s journal (e.g., "mod+shift+left")',
+    default: 'mod+shift+left',
+  }, {
+    key: 'hotkeyNextDay',
+    type: 'string',
+    title: 'Hotkey to go to next day journal',
+    description: 'Navigate to tomorrow\'s journal (e.g., "mod+shift+right")',
+    default: 'mod+shift+right',
+  }, {
     key: 'keepOpenOnSelect',
     type: 'boolean',
     title: '',
@@ -98,6 +110,88 @@ const model = {
   goToToday () {
     model.goToDayOfJournal(Date.now())
   },
+
+  async goToPreviousDayJournal () {
+    try {
+      // Get current page
+      const currentPage = await logseq.Editor.getCurrentPage()
+      console.log('[Previous Day] Current page:', JSON.stringify(currentPage, null, 2))
+
+      if (!currentPage) {
+        console.warn('[Previous Day] No current page found')
+        return
+      }
+
+      // Check if it's a journal page by checking if journalDay exists
+      const journalDay = currentPage.journalDay
+      console.log('[Previous Day] journalDay value:', journalDay, 'type:', typeof journalDay)
+
+      if (!journalDay) {
+        console.warn('[Previous Day] Not a journal page (journalDay is null or undefined)')
+        return
+      }
+
+      // Parse YYYYMMDD format
+      const referenceDate = dayjs(journalDay.toString(), 'YYYYMMDD')
+      console.log('[Previous Day] Parsed date:', referenceDate.format('YYYY-MM-DD'), 'isValid:', referenceDate.isValid())
+
+      if (!referenceDate.isValid()) {
+        console.warn('[Previous Day] Invalid date parsed from journalDay:', journalDay)
+        return
+      }
+
+      // Calculate previous day
+      const previousDay = referenceDate.subtract(1, 'day')
+      console.log('[Previous Day] Navigating to:', previousDay.format('YYYY-MM-DD'))
+
+      // Navigate to previous day journal
+      model.goToDayOfJournal(previousDay.format('YYYY-MM-DD'))
+    } catch (error) {
+      console.error('[Previous Day] Error:', error)
+      console.error('[Previous Day] Error stack:', error.stack)
+    }
+  },
+
+  async goToNextDayJournal () {
+    try {
+      // Get current page
+      const currentPage = await logseq.Editor.getCurrentPage()
+      console.log('[Next Day] Current page:', JSON.stringify(currentPage, null, 2))
+
+      if (!currentPage) {
+        console.warn('[Next Day] No current page found')
+        return
+      }
+
+      // Check if it's a journal page by checking if journalDay exists
+      const journalDay = currentPage.journalDay
+      console.log('[Next Day] journalDay value:', journalDay, 'type:', typeof journalDay)
+
+      if (!journalDay) {
+        console.warn('[Next Day] Not a journal page (journalDay is null or undefined)')
+        return
+      }
+
+      // Parse YYYYMMDD format
+      const referenceDate = dayjs(journalDay.toString(), 'YYYYMMDD')
+      console.log('[Next Day] Parsed date:', referenceDate.format('YYYY-MM-DD'), 'isValid:', referenceDate.isValid())
+
+      if (!referenceDate.isValid()) {
+        console.warn('[Next Day] Invalid date parsed from journalDay:', journalDay)
+        return
+      }
+
+      // Calculate next day
+      const nextDay = referenceDate.add(1, 'day')
+      console.log('[Next Day] Navigating to:', nextDay.format('YYYY-MM-DD'))
+
+      // Navigate to next day journal
+      model.goToDayOfJournal(nextDay.format('YYYY-MM-DD'))
+    } catch (error) {
+      console.error('[Next Day] Error:', error)
+      console.error('[Next Day] Error stack:', error.stack)
+    }
+  },
 }
 
 /**
@@ -141,6 +235,24 @@ function main () {
 
       const rect = await logseq.App.queryElementRect('#open-calendar-button')
       model.openCalendar({ rect })
+    })
+  }
+
+  // Previous day shortcut
+  if (logseq.settings.hotkeyPrevDay) {
+    logseq.App.registerCommandShortcut({
+      binding: logseq.settings.hotkeyPrevDay,
+    }, async () => {
+      await model.goToPreviousDayJournal()
+    })
+  }
+
+  // Next day shortcut
+  if (logseq.settings.hotkeyNextDay) {
+    logseq.App.registerCommandShortcut({
+      binding: logseq.settings.hotkeyNextDay,
+    }, async () => {
+      await model.goToNextDayJournal()
     })
   }
 
