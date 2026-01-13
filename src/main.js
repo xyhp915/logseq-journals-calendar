@@ -111,86 +111,35 @@ const model = {
     model.goToDayOfJournal(Date.now())
   },
 
-  async goToPreviousDayJournal () {
+  async _navigateToJournalOffset (offset) {
     try {
-      // Get current page
       const currentPage = await logseq.Editor.getCurrentPage()
-      console.log('[Previous Day] Current page:', JSON.stringify(currentPage, null, 2))
 
-      if (!currentPage) {
-        console.warn('[Previous Day] No current page found')
+      if (!currentPage?.journalDay) {
+        console.warn('Not a journal page or page not found')
         return
       }
 
-      // Check if it's a journal page by checking if journalDay exists
-      const journalDay = currentPage.journalDay
-      console.log('[Previous Day] journalDay value:', journalDay, 'type:', typeof journalDay)
-
-      if (!journalDay) {
-        console.warn('[Previous Day] Not a journal page (journalDay is null or undefined)')
-        return
-      }
-
-      // Parse YYYYMMDD format
-      const referenceDate = dayjs(journalDay.toString(), 'YYYYMMDD')
-      console.log('[Previous Day] Parsed date:', referenceDate.format('YYYY-MM-DD'), 'isValid:', referenceDate.isValid())
+      const referenceDate = dayjs(currentPage.journalDay.toString(), 'YYYYMMDD')
 
       if (!referenceDate.isValid()) {
-        console.warn('[Previous Day] Invalid date parsed from journalDay:', journalDay)
+        console.warn('Invalid journal date:', currentPage.journalDay)
         return
       }
 
-      // Calculate previous day
-      const previousDay = referenceDate.subtract(1, 'day')
-      console.log('[Previous Day] Navigating to:', previousDay.format('YYYY-MM-DD'))
-
-      // Navigate to previous day journal
-      model.goToDayOfJournal(previousDay.format('YYYY-MM-DD'))
+      const targetDay = referenceDate.add(offset, 'day')
+      model.goToDayOfJournal(targetDay.format('YYYY-MM-DD'))
     } catch (error) {
-      console.error('[Previous Day] Error:', error)
-      console.error('[Previous Day] Error stack:', error.stack)
+      console.error('Journal navigation error:', error)
     }
   },
 
+  async goToPreviousDayJournal () {
+    await model._navigateToJournalOffset(-1)
+  },
+
   async goToNextDayJournal () {
-    try {
-      // Get current page
-      const currentPage = await logseq.Editor.getCurrentPage()
-      console.log('[Next Day] Current page:', JSON.stringify(currentPage, null, 2))
-
-      if (!currentPage) {
-        console.warn('[Next Day] No current page found')
-        return
-      }
-
-      // Check if it's a journal page by checking if journalDay exists
-      const journalDay = currentPage.journalDay
-      console.log('[Next Day] journalDay value:', journalDay, 'type:', typeof journalDay)
-
-      if (!journalDay) {
-        console.warn('[Next Day] Not a journal page (journalDay is null or undefined)')
-        return
-      }
-
-      // Parse YYYYMMDD format
-      const referenceDate = dayjs(journalDay.toString(), 'YYYYMMDD')
-      console.log('[Next Day] Parsed date:', referenceDate.format('YYYY-MM-DD'), 'isValid:', referenceDate.isValid())
-
-      if (!referenceDate.isValid()) {
-        console.warn('[Next Day] Invalid date parsed from journalDay:', journalDay)
-        return
-      }
-
-      // Calculate next day
-      const nextDay = referenceDate.add(1, 'day')
-      console.log('[Next Day] Navigating to:', nextDay.format('YYYY-MM-DD'))
-
-      // Navigate to next day journal
-      model.goToDayOfJournal(nextDay.format('YYYY-MM-DD'))
-    } catch (error) {
-      console.error('[Next Day] Error:', error)
-      console.error('[Next Day] Error stack:', error.stack)
-    }
+    await model._navigateToJournalOffset(1)
   },
 }
 
