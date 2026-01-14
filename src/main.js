@@ -72,7 +72,7 @@ const settingsSchema = [
     title: '',
     description: 'Show week numbers in calendar',
     default: false,
-  },{
+  }, {
     key: 'showIsoWeeknumbers',
     type: 'boolean',
     title: '',
@@ -103,7 +103,7 @@ const model = {
     }
 
     app?._refreshUserConfigs().then(() => {
-      app._onDaySelect({ event: {}, id: date })
+      app._onDaySelect({ id: date }, {})
     })
   },
 
@@ -184,6 +184,8 @@ function main () {
 
       const rect = await logseq.App.queryElementRect('#open-calendar-button')
       model.openCalendar({ rect })
+    }, {
+      label: 'Open Journals Calendar',
     })
   }
 
@@ -193,6 +195,8 @@ function main () {
       binding: logseq.settings.hotkeyPrevDay,
     }, async () => {
       await model.goToPreviousDayJournal()
+    }, {
+      label: 'Go to Previous Day Journal',
     })
   }
 
@@ -202,6 +206,8 @@ function main () {
       binding: logseq.settings.hotkeyNextDay,
     }, async () => {
       await model.goToNextDayJournal()
+    }, {
+      label: 'Go to Next Day Journal',
     })
   }
 

@@ -8,7 +8,7 @@
           v-if="ready"
           ref="calendar"
           :onDayclick="_onDaySelect"
-          @update:to-page="_onToPage"
+          @update:pages="_onToPage"
           v-bind="opts"/>
       </Transition>
     </div>
@@ -25,10 +25,10 @@ function createSetterContainerStyle (mode) {
   return (k, v, ...args) => {
     if (!containerStyle) {
       containerStyle = [...document.styleSheets[0].cssRules, ...(document.styleSheets[1]?.cssRules || [])].find(
-        s => s.selectorText === `.vc-container${mode === 'dark' ? '.vc-is-dark' : ''}`).style
+        s => s.selectorText === `.vc-container${mode === 'dark' ? '.vc-is-dark' : ''}`)?.style
     }
 
-    containerStyle.setProperty(kebabCase(k), v, ...args)
+    containerStyle?.setProperty(kebabCase(k), v, ...args)
   }
 }
 
@@ -201,7 +201,12 @@ export default {
     },
 
     _onToPage (e) {
-      this.mDate = e
+      if (!e?.[0]?.year) {
+        throw new Error(`Invalid month change event: ${e}`)
+      }
+
+      const { month, year } = e[0]
+      this.mDate = { month, year }
     },
 
     async _getCurrentRepoRangeJournals () {
@@ -236,7 +241,9 @@ export default {
       })
     },
 
-    async _onDaySelect ({ event, id }) {
+    async _onDaySelect (payload, event) {
+      const { id } = payload
+
       this.date = id
 
       let t = id
