@@ -49,6 +49,18 @@ const settingsSchema = [
     description: 'Hotkey to open calendar',
     default: null,
   }, {
+    key: 'hotkeyPrevDay',
+    type: 'string',
+    title: 'Hotkey to go to previous day journal',
+    description: 'Navigate to yesterday\'s journal (e.g., "mod+shift+left")',
+    default: 'mod+shift+left',
+  }, {
+    key: 'hotkeyNextDay',
+    type: 'string',
+    title: 'Hotkey to go to next day journal',
+    description: 'Navigate to tomorrow\'s journal (e.g., "mod+shift+right")',
+    default: 'mod+shift+right',
+  }, {
     key: 'keepOpenOnSelect',
     type: 'boolean',
     title: '',
@@ -60,7 +72,7 @@ const settingsSchema = [
     title: '',
     description: 'Show week numbers in calendar',
     default: false,
-  },{
+  }, {
     key: 'showIsoWeeknumbers',
     type: 'boolean',
     title: '',
@@ -91,12 +103,43 @@ const model = {
     }
 
     app?._refreshUserConfigs().then(() => {
-      app._onDaySelect({ event: {}, id: date })
+      app._onDaySelect({ id: date }, {})
     })
   },
 
   goToToday () {
     model.goToDayOfJournal(Date.now())
+  },
+
+  async _navigateToJournalOffset (offset) {
+    try {
+      const currentPage = await logseq.Editor.getCurrentPage()
+
+      if (!currentPage?.journalDay) {
+        console.warn('Not a journal page or page not found')
+        return
+      }
+
+      const referenceDate = dayjs(currentPage.journalDay.toString(), 'YYYYMMDD')
+
+      if (!referenceDate.isValid()) {
+        console.warn('Invalid journal date:', currentPage.journalDay)
+        return
+      }
+
+      const targetDay = referenceDate.add(offset, 'day')
+      model.goToDayOfJournal(targetDay.format('YYYY-MM-DD'))
+    } catch (error) {
+      console.error('Journal navigation error:', error)
+    }
+  },
+
+  async goToPreviousDayJournal () {
+    await model._navigateToJournalOffset(-1)
+  },
+
+  async goToNextDayJournal () {
+    await model._navigateToJournalOffset(1)
   },
 }
 
@@ -141,6 +184,30 @@ function main () {
 
       const rect = await logseq.App.queryElementRect('#open-calendar-button')
       model.openCalendar({ rect })
+    }, {
+      label: 'Open Journals Calendar',
+    })
+  }
+
+  // Previous day shortcut
+  if (logseq.settings.hotkeyPrevDay) {
+    logseq.App.registerCommandShortcut({
+      binding: logseq.settings.hotkeyPrevDay,
+    }, async () => {
+      await model.goToPreviousDayJournal()
+    }, {
+      label: 'Go to Previous Day Journal',
+    })
+  }
+
+  // Next day shortcut
+  if (logseq.settings.hotkeyNextDay) {
+    logseq.App.registerCommandShortcut({
+      binding: logseq.settings.hotkeyNextDay,
+    }, async () => {
+      await model.goToNextDayJournal()
+    }, {
+      label: 'Go to Next Day Journal',
     })
   }
 
