@@ -8,7 +8,7 @@
           v-if="ready"
           ref="calendar"
           :onDayclick="_onDaySelect"
-          @update:pages="_onToPage"
+          @did-move="_onToPage"
           v-bind="opts"/>
       </Transition>
     </div>
@@ -81,7 +81,7 @@ export default {
             dates: new Date(),
           },
         ],
-        [`first-day-of-week`]: firstDayOfWeek,
+        // [`first-day-of-week`]: firstDayOfWeek,
         ...(props || {}),
       },
       mDate: {
@@ -127,7 +127,12 @@ export default {
     setDarkContainerStyle('borderColor', '#5151515c')
 
     logseq.on('ui:visible:changed', ({ visible }) => {
-      visible && (this.ready = true, setTimeout(refreshConfigs, 1000))
+      if (visible) {
+        this.ready = true
+        refreshConfigs().then(() => {
+          this._updateCalendarInMonth()
+        })
+      }
     })
 
     logseq.on('settings:changed', (settings) => {
