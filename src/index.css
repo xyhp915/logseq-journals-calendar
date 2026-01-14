@@ -23,14 +23,9 @@ html, body {
   transform: translateY(5px);
 }
 
-h1 {
-  color: red;
-  font-size: 20px;
-  text-align: center;
-}
-
-.vc-container {
+.vc-container, .vc-popover-content {
   border-radius: 4px !important;
+  background-color: var(--vc-custom-bg, var(--vc-bg)) !important;
 }
 
 .fade-enter-active,
@@ -41,4 +36,14 @@ h1 {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+button {
+  background: transparent;
+}
+
+.vc-dark.vc-popover-content button {
+  --vc-nav-hover-bg: rgba(255, 255, 255, 0.1);
+
+  color: #fff !important;
 }

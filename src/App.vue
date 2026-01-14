@@ -9,7 +9,8 @@
           ref="calendar"
           :onDayclick="_onDaySelect"
           @did-move="_onToPage"
-          v-bind="opts"/>
+          v-bind="opts"
+        />
       </Transition>
     </div>
   </div>
@@ -24,11 +25,14 @@ function createSetterContainerStyle (mode) {
 
   return (k, v, ...args) => {
     if (!containerStyle) {
-      containerStyle = [...document.styleSheets[0].cssRules, ...(document.styleSheets[1]?.cssRules || [])].find(
-        s => s.selectorText === `.vc-container${mode === 'dark' ? '.vc-is-dark' : ''}`)?.style
+      containerStyle = document.querySelector('.calendar-inner').style
     }
 
-    containerStyle?.setProperty(kebabCase(k), v, ...args)
+    if (['backgroundColor'].includes(k)) {
+      containerStyle?.setProperty(`--vc-custom-bg`, v)
+    } else {
+      containerStyle?.setProperty(kebabCase(k), v, ...args)
+    }
   }
 }
 
@@ -67,7 +71,6 @@ export default {
       journals: null,
       opts: {
         color: 'orange',
-        [`is-dark`]: false,
         [`show-weeknumbers`]: showWeekNumbers,
         [`show-iso-weeknumbers`]: showIsoWeeknumbers,
         attributes: [
@@ -124,7 +127,7 @@ export default {
     const refreshConfigs = this._refreshUserConfigs.bind(this)
 
     // TODO: expose
-    setDarkContainerStyle('borderColor', '#5151515c')
+    setDarkContainerStyle('borderColor', 'rgba(81,81,81,0.21)')
 
     logseq.on('ui:visible:changed', ({ visible }) => {
       if (visible) {
