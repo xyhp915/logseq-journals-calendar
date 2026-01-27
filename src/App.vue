@@ -193,12 +193,13 @@ export default {
 
       // console.debug('[query journals]', journals)
 
-      const dates = journals.map(it => {
+      // Use the deduplicated journals object instead of the original array
+      const dates = Object.values(this.journals).map(it => {
         const d = dayjs(it[`journal-day`].toString())
         if (d.isValid() && !d.isToday()) {
           return d.toDate()
         }
-      })
+      }).filter(Boolean) // Filter out undefined values
 
       this.opts.attributes[0] = {
         dot: true,
@@ -279,7 +280,14 @@ export default {
       }
 
       const { supportDb } = await logseq.App.getInfo()
-      const isDbGraph = await safeLogseqAppCall('checkCurrentIsDbGraph')
+      let isDbGraph = false
+      try {
+        isDbGraph = await logseq.App.checkCurrentIsDbGraph()
+      } catch (e) {
+        // Method doesn't exist, fallback to checking graph name
+        const graph = await logseq.App.getCurrentGraph()
+        isDbGraph = graph?.name?.startsWith('logseq_db') || false
+      }
       let page = await logseq.Editor.getPage(t)
 
       if (isDbGraph || supportDb || event.shiftKey) {
