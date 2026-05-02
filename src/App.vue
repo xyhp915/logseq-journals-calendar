@@ -84,7 +84,7 @@ export default {
             dates: new Date(),
           },
         ],
-        // [`first-day-of-week`]: firstDayOfWeek,
+        [`first-day-of-week`]: firstDayOfWeek,
         ...(props || {}),
       },
       mDate: {
