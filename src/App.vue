@@ -294,7 +294,9 @@ export default {
 
       if (event.shiftKey) {
         logseq.Editor.openInRightSidebar(page?.uuid)
-        logseq.hideMainUI()
+        if (!this.keepOpenOnSelect) {
+          logseq.hideMainUI()
+        }
       } else {
         if (isDbGraph || supportDb) {
           t = page?.uuid
